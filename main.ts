@@ -123,7 +123,20 @@ function selfCheck(text, total, max) {
 function main() {
   const { text, total, max } = buildRoast();
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-  fs.writeFileSync(ENTRY_PATH, text, "utf8");
+  // Atomic write: stage the roast in a temp file in the same directory,
+  // then rename over the entry. A crash mid-write leaves the old entry
+  // intact instead of a half-written file, and readers never see a
+  // partial roast.
+  const tmpPath = `${ENTRY_PATH}.tmp-${process.pid}`;
+  try {
+    fs.writeFileSync(tmpPath, text, "utf8");
+    fs.renameSync(tmpPath, ENTRY_PATH);
+  } catch (err) {
+    try {
+      fs.unlinkSync(tmpPath);
+    } catch {}
+    throw err;
+  }
   const readBack = fs.readFileSync(ENTRY_PATH, "utf8");
   const failures = selfCheck(readBack, total, max);
   if (readBack !== text) {
