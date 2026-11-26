@@ -1,0 +1,1 @@
+{"description":"Midnight Fridge Roast — a deterministic Node program that roasts a midnight fridge lineup and writes the roast to entry.txt.","engines":{"node":">=22"},"license":"MIT","main":"main.ts","name":"u-carbon-forge-midnight-fridge-roast-fc5d44a7","type":"commonjs","version":"1.0.0"}
